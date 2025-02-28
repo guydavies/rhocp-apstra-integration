@@ -1,0 +1,18 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: ens2f1-vfio-pci-policy
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+    pfNames:
+      - ens2f1
+    rootDevices:
+      - '0000:81:00.1'
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  numVfs: 8
+  priority: 99
+  resourceName: vm_vfs_ens2f1

@@ -1,0 +1,31 @@
+#!/usr/bin/bash
+ns="${1:-apstra-rhocp-demo}"
+oc get pod -n $ns -o json | jq -r '
+  ["Pod Name", "Namespace", "Node", "POD-IP", "SRIOV-VF-IP", "SRIOV-VF-MAC", "Pod State"],
+  ["--------------------------------------------------------------------------------------------------------------------------------------------------------"],
+  ( .items[] |
+    select(.metadata.name | test("^virt-launcher") | not) |
+    [
+      .metadata.name,
+      .metadata.namespace,
+      .spec.nodeName,
+      .status.podIP,
+      (
+        .metadata.annotations."k8s.v1.cni.cncf.io/network-status"
+        | fromjson
+        | .[]
+        | select(.interface == "ext0")
+        | .ips[0]
+        // "N/A"
+      ),
+      (
+        .metadata.annotations."k8s.v1.cni.cncf.io/network-status"
+        | fromjson
+        | .[]
+        | select(.interface == "ext0")
+        | .mac
+        // "N/A"
+      ),
+      .status.phase
+    ]
+  ) | @tsv' | expand -t 40,45,60,75,90,110,130 | column -t -s $'\t'

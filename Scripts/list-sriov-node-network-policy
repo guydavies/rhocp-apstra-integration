@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+# Get the list of worker nodes with the SRIOV capable label
+SRIOV_NODES=$(oc get nodes -l feature.node.kubernetes.io/network-sriov.capable=true -o jsonpath='{.items[*].metadata.name}' | tr ' ' ';')
+
+# Generate the table with two tabs between columns
+(echo -e "\n\nNAME\t\tDEVICETYPE\t\tPFNAMES\t\tNUMVFS\t\tRESOURCENAME\t\tNODESELECTOR"; \
+oc get sriovnetworknodepolicies.sriovnetwork.openshift.io -n openshift-sriov-network-operator -o json | \
+jq -r --arg nodes "$SRIOV_NODES" '.items[] | [.metadata.name, .spec.deviceType, (.spec.nicSelector.pfNames | join(",")), .spec.numVfs, .spec.resourceName, $nodes] | @tsv' | \
+sed 's/\t/\t\t/g') | \
+column -t -s $'\t'

@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+ns="${1:-apstra-rhocp-demo}"
+oc get vms -n $ns -o json | jq -r '
+  ["VM Name", "Namespace", "CPU", "Memory","IP Address", "MAC Address", "Status"],
+  ["--------------------------------------------------------------------------------------------------------------------------------------------------------"],
+  ( .items[] |
+    [
+      .metadata.name,
+      .metadata.namespace,
+      (.spec.template.spec.domain.cpu.cores | tostring),
+      .spec.template.spec.domain.resources.requests.memory,
+      (
+        (.spec.template.spec.volumes[] | select(.cloudInitConfigDrive) | .cloudInitConfigDrive.userData | split("\n") | 
+          map(select(test("addresses:")) | sub(".*\\["; "") | sub("\\].*"; "") | sub("/[0-9]+"; "")) | join(", "))
+        // "N/A"
+      ),
+      (.spec.template.spec.domain.devices.interfaces[] | select(.sriov) | .macAddress // "N/A"),
+      .status.printableStatus
+    ]
+  ) | @tsv' | expand -t 40,60,70,85,90,105,130 | column -t -s $'\t'

@@ -1,0 +1,33 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: sriovnet-vn1
+  namespace: openshift-sriov-network-operator
+  labels:
+    type: eda
+    pfname: ens2f0
+  annotations:
+    apstra.juniper.net/vnet: '[
+      {
+        "vnetName": "vn1",
+        "vrfName": "vrf-demo"
+      }
+    ]'
+spec:
+  ipam: |
+    {
+      "type": "host-local",
+      "subnet": "10.241.0.0/24",
+      "rangeStart": "10.241.0.101",
+      "rangeEnd": "10.241.0.200",
+      "gateway": "10.241.0.1",
+      "routes": [
+        {
+          "dst": "10.242.0.0/16",
+          "gw": "10.241.0.1"
+        }
+      ]
+    }
+  networkNamespace: apstra-rhocp-demo
+  resourceName: pod_vfs_ens2f0
+  vlan: 100

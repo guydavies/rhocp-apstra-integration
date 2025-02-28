@@ -1,0 +1,17 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: ens2f0-netdev-policy
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: netdevice
+  isRdma: false
+  needVhostNet: true
+  nicSelector:
+    pfNames:
+      - ens2f0
+  nodeSelector:
+    feature.node.kubernetes.io/network-sriov.capable: 'true'
+  numVfs: 8
+  priority: 99
+  resourceName: pod_vfs_ens2f0

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Run the oc get command and filter using jq
+output=$(oc get NodeNetworkState -o json | jq '[.items[] | {name: .metadata.name, interfaces: [.status.currentState.interfaces[] | select(.lldp.neighbors != null) | {serverPort: .name, neighbors: (.lldp.neighbors[] | reduce .[] as $item ({}; . * $item))}]}]')
+
+# Print headers for the table with fixed column width
+printf "%-15s %-15s %-30s %-20s\n" "Worker Node" "Server PF NIC" "Leaf Switch" "Leaf Switch Port"
+echo "----------------------------------------------------------------------------------------"
+
+# Iterate through the JSON output and print the required information
+echo "$output" | jq -r '.[] | .name as $servername | .interfaces[] | [$servername, .serverPort, .neighbors["system-name"], .neighbors["port-id"]] | @tsv' | while IFS=$'\t' read -r servername serverport systemid portid
+do
+    # Align the output with fixed column widths
+    printf "%-15s %-15s %-30s %-20s\n" "$servername" "$serverport" "$systemid" "$portid"
+done
