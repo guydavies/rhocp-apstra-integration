@@ -2,6 +2,9 @@
 
 [![Watch the video](https://www.youtube.com/watch?v=A9UfKUNvUdc/0.jpg)](https://www.youtube.com/watch?v=A9UfKUNvUdc)
 
+[Juniper Blog](https://blogs.juniper.net/en-us/ai-data-center-networking/seamless-network-integration-connecting-openshift-to-your-data-center-with-apstra) link.
+
+
 ## Introduction
 
 By default, when a network operator deploys workloads in Kubernetes, the
