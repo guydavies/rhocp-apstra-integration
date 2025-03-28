@@ -1,5 +1,7 @@
 # Build a Demo of Integration of RHOCP and Apstra using RH Ansible Event-Driven Automation
 
+[![Watch the video](https://www.youtube.com/watch?v=A9UfKUNvUdc/0.jpg)](https://www.youtube.com/watch?v=A9UfKUNvUdc)
+
 ## Introduction
 
 By default, when a network operator deploys workloads in Kubernetes, the
